@@ -1,0 +1,27 @@
+version: '3.2'
+
+services:
+        app:
+                container_name: logging_service_app
+                build: docker/logging_service_app
+                restart: always
+                volumes:
+                        - .:${GO_PROJECT_DIR}
+                environment:
+                        DEBUG: ${DEBUG}
+                        GO_WORK_DIR: ${GO_PROJECT_DIR}/app
+                        CLICKHOUSE_SERVER: tcp://logging_service_clickhouse:9000
+                ports:
+                        - 8080:8080
+                        - 2345:2345
+                security_opt:
+                        - seccomp:unconfined
+
+        clickhouse:
+                container_name: logging_service_clickhouse
+                image: yandex/clickhouse-server
+                restart: always
+                ports:
+                        - 9000:9000
+                volumes:
+                        - ./data:/var/lib/clickhouse
