@@ -9,6 +9,7 @@ services:
                         - .:${GO_PROJECT_DIR}
                 environment:
                         DEBUG: ${DEBUG}
+                        GIN_MODE: ${GIN_MODE}
                         GO_WORK_DIR: ${GO_PROJECT_DIR}/app
                         CLICKHOUSE_SERVER: tcp://logging_service_clickhouse:9000
                 ports:

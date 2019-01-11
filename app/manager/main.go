@@ -1,6 +1,8 @@
 package main
 
 import (
+	"../migrations"
+	"../models"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/kshvakov/clickhouse"
@@ -24,10 +26,9 @@ func main() {
 func Database() (*sqlx.DB, error) {
 	return sqlx.Open(
 		"clickhouse",
-		os.Getenv("CLICKHOUSE_SERVER") + "?debug=true",
+		os.Getenv("CLICKHOUSE_SERVER")+"?debug=true",
 	)
 }
-
 
 func migrate() {
 	db, err := Database()
@@ -42,7 +43,7 @@ func migrate() {
 		) ENGINE=MergeTree(event_date, (num), 8192)
 	`)
 
-	var _migratesInfo []migrateInfo
+	var _migratesInfo []models.MigrateInfo
 	err = db.Select(&_migratesInfo, `SELECT * FROM logging.migrations`)
 
 	migratesInfo := make(map[int]int)
@@ -52,12 +53,12 @@ func migrate() {
 
 	tx := db.MustBegin()
 	i := 0
-	for num, schema := range migrations {
+	for num, schema := range migrations.Migrations {
 		status, ok := migratesInfo[num]
 		if !ok || status != 1 {
 			fmt.Printf("migrate %d\n", num)
 			db.MustExec(schema)
-			m := migrateInfo{num, 1, time.Now()}
+			m := models.MigrateInfo{num, 1, time.Now()}
 			tx.NamedExec(
 				`
 				INSERT INTO logging.migrations
@@ -74,7 +75,3 @@ func migrate() {
 		fmt.Println("No migrate apply")
 	}
 }
-
-
-
-
