@@ -12,15 +12,20 @@ services:
                         GIN_MODE: ${GIN_MODE}
                         GO_WORK_DIR: ${GO_PROJECT_DIR}/app
                         CLICKHOUSE_SERVER: tcp://logging_service_clickhouse:9000
+                working_dir: ${GO_PROJECT_DIR}/app
                 ports:
                         - 8080:8080
                         - 2345:2345
+                depends_on:
+                  - clickhouse
+                links:
+                  - clickhouse
                 security_opt:
                         - seccomp:unconfined
 
         clickhouse:
                 container_name: logging_service_clickhouse
-                image: yandex/clickhouse-server
+                build: docker/clickhouse
                 restart: always
                 ports:
                         - 9000:9000

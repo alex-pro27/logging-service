@@ -21,19 +21,25 @@ func (actions Actions) AddLog(c *gin.Context) {
 
 	tx := actions.DB.MustBegin()
 
-	log := models.Log{appName, text, typeLog, time.Now(), time.Now()}
+	log := models.Log{
+		App:       appName,
+		Text:      text,
+		Type:      typeLog,
+		EventDate: time.Now(),
+		Created:   time.Now(),
+	}
 	_, err = tx.NamedExec(
 		`
-		INSERT INTO logging.log
+		INSERT INTO log
 		(app, text, type_log, created, event_date) 
 		VALUES (:app, :text, :type_log, :created, :event_date)
 		`,
-		&log,
+		log,
 	)
 	err = tx.Commit()
 
 	if err != nil {
-		c.IndentedJSON(500, gin.H{
+		c.IndentedJSON(200, gin.H{
 			"error":   true,
 			"message": err.Error(),
 		})
@@ -49,7 +55,7 @@ func (actions Actions) GetLogs(c *gin.Context) {
 	app, isApp := c.GetQuery("app")
 	typeLog, isTypeLog := c.GetQuery("type")
 
-	_logs := sq.Select("app, text, created", "type_log").From("logging.log").Limit(100)
+	_logs := sq.Select("app, text, created", "type_log").From("log").Limit(100)
 
 	if isApp {
 		_logs = _logs.Where(sq.Eq{"app": app})
@@ -67,7 +73,7 @@ func (actions Actions) GetLogs(c *gin.Context) {
 	err = actions.DB.Select(&logs, sql, args...)
 
 	if err != nil {
-		c.IndentedJSON(500, gin.H{
+		c.IndentedJSON(200, gin.H{
 			"error":   true,
 			"message": err.Error(),
 		})

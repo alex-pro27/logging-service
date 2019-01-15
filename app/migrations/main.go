@@ -2,7 +2,7 @@ package migrations
 
 var Migrations = map[int]string{
 	0: `
-		CREATE TABLE IF NOT EXISTS logging.log (
+		CREATE TABLE IF NOT EXISTS log (
 			app String,
 			text Text,
     		type_log String,

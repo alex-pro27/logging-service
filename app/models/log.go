@@ -9,9 +9,3 @@ type Log struct {
 	Created   time.Time `db:"created" json:"created"`
 	EventDate time.Time `db:"event_date" json:"event_date"`
 }
-
-type MigrateInfo struct {
-	Num       int       `db:"num"`
-	Status    int       `db:"status"`
-	EventDate time.Time `db:"event_date"`
-}

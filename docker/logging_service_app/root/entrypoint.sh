@@ -1,7 +1,11 @@
-#!/usr/bin/env sh
+#!/bin/bash
+
+set -e
 
 GO_WORK_DIR=${GO_WORK_DIR:-$GOPATH/src}
 cd ${GO_WORK_DIR}
+
+go run ./manager/* migrate
 
 if  [[ 1 = "$DEBUG" ]]; then
     echo "Run debug mode"

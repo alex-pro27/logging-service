@@ -1,6 +1,5 @@
 .idea
 .env
-app/pid.file
 app/app_server
 app/debug
 data
